@@ -1,0 +1,52 @@
+name: Deploy Website IMDb-Clone
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+permissions:
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: github-pages
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Inject API Key (TMDB) into env for build
+        # ini hanya menaruh ke env build, tidak mencetak apapun
+        run: echo "THE_MOVIE_DB_API_KEY=${{ secrets.THE_MOVIE_DB_API_KEY }}" >> $GITHUB_ENV
+
+      - name: Build project
+        run: npm run build
+        # pastikan npm run build menghasilkan folder "dist" (ubah kalau berbeda)
+
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
