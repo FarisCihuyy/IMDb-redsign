@@ -7,7 +7,7 @@ import {
 
 const Navbar = () => {
   return (
-    <nav className="absolute z-20 top-0 left-0 right-0 flex justify-between items-center px-16 py-4 bg-gradient-to-t from-transparent to-black/80">
+    <nav className="absolute z-20 top-0 left-0 right-0 flex justify-between items-center px-8 py-4 bg-gradient-to-t from-transparent to-black/80">
       <div className="flex gap-12 items-center">
         <h1 className="px-2 py-1 bg-accent text-2xl text-black font-black rounded">
           IMDb

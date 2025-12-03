@@ -2,15 +2,13 @@ export default function Tabs({ active, onChange }) {
   const tabs = ["All", "Movies", "TV Shows"];
 
   return (
-    <div className="flex gap-6 text-white">
+    <div className="flex gap-6">
       {tabs.map((tab) => (
         <button
           key={tab}
           onClick={() => onChange(tab)}
-          className={`pb-2 transition-all ${
-            active === tab
-              ? "border-b-2 border-white font-semibold"
-              : "text-gray-400"
+          className={`pb-1 transition-colors cursor-pointer select-none ${
+            active === tab ? "border-b-2 border-white" : "text-gray-400"
           }`}
         >
           {tab}

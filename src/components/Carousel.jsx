@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import GenreBadge from "./GenreBadge";
+import { getGenres } from "../utils/getGenres";
 
 export default function Carousel({ items = ["Item 1", "Item 2", "Item 3"] }) {
   const [index, setIndex] = useState(1);
@@ -9,12 +10,11 @@ export default function Carousel({ items = ["Item 1", "Item 2", "Item 3"] }) {
   // Extended array: [last, ...items, first]
   const extended = [items[items.length - 1], ...items, items[0]];
 
-  // Auto slide setiap 3 detik
   useEffect(() => {
     const interval = setInterval(() => {
       setIsTransitioning(true);
       setIndex((prev) => prev + 1);
-    }, 3000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
@@ -57,40 +57,47 @@ export default function Carousel({ items = ["Item 1", "Item 2", "Item 3"] }) {
         style={{ transform: `translateX(-${index * 100}%)` }}
       >
         {/* SLIDES - Jangan taruh transform di sini */}
-        {extended.map((item, i) => (
-          <div
-            key={i}
-            className="relative flex items-center w-full h-full px-20 bg-cover bg-center flex-shrink-0"
-            style={{
-              backgroundImage: `url(https://image.tmdb.org/t/p/original${item.backdrop_path})`,
-            }}
-          >
-            {/* Gradient overlays untuk fade effect */}
-            <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none"></div>
-            <div className="absolute left-0 top-0 w-1/2 h-full bg-gradient-to-r from-black/90 via-black/50 to-transparent pointer-events-none"></div>
+        {extended.map((item, i) => {
+          const genres = getGenres(
+            item.genre_ids,
+            item.media_type === "movie" ? "movie" : "tv"
+          );
 
-            {/* Content */}
-            <div className="relative z-10 space-y-6 max-w-md">
-              <h1 className="font-bold text-5xl text-white drop-shadow-2xl">
-                {item.original_title || item.original_name || "Untitled"}
-              </h1>
-              <div className="flex gap-2.5 text-xs">
-                <GenreBadge genres={["Action", "Adventure", "Drama"]} />
+          return (
+            <div
+              key={i}
+              className="relative flex items-center w-full h-full px-12 bg-cover bg-center flex-shrink-0"
+              style={{
+                backgroundImage: `url(https://image.tmdb.org/t/p/original${item.backdrop_path})`,
+              }}
+            >
+              {/* Gradient overlays untuk fade effect */}
+              <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none"></div>
+              <div className="absolute left-0 top-0 w-1/2 h-full bg-gradient-to-r from-black/90 via-black/50 to-transparent pointer-events-none"></div>
+
+              {/* Content */}
+              <div className="relative z-10 space-y-6 max-w-md">
+                <h1 className="font-bold text-5xl text-white drop-shadow-2xl">
+                  {item.original_title || item.original_name || "Untitled"}
+                </h1>
+                <div className="flex gap-2.5 text-xs">
+                  <GenreBadge genres={genres} />
+                </div>
+                <p className="text-sm text-white/95 leading-relaxed drop-shadow-lg">
+                  {item.overview ||
+                    "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family."}
+                </p>
+                <h3 className="uppercase font-bold text-sm text-white/90">
+                  {item.media_type}
+                </h3>
               </div>
-              <p className="text-sm text-white/95 leading-relaxed drop-shadow-lg">
-                {item.overview ||
-                  "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family."}
-              </p>
-              <h3 className="uppercase font-bold text-sm text-white/90">
-                {item.media_type}
-              </h3>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* DOTS INDICATOR */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 bg-[#2525255f] px-4 py-2 rounded-full">
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 bg-[#25252578] px-4 py-2 rounded-full">
         {items.map((_, i) => (
           <div
             key={i}

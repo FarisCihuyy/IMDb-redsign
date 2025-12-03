@@ -32,7 +32,6 @@ async function fetchData(endpoint, language = "en-US") {
     if (isValid) {
       console.log(`🔵 Load from LOCAL STORAGE CACHE: ${cacheKey}`);
 
-      // Masukkan kembali ke memory cache
       memoryCache.set(cacheKey, {
         data: parsed.data,
         timestamp: parsed.timestamp,
