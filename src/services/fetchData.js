@@ -1,9 +1,48 @@
-const API_KEY =
-  "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3NDJhYTU0ZDE0ODNlYjcwMTQ0MzdkM2IwZTFhMDM0MCIsIm5iZiI6MTc2NDYwNDU2My42Niwic3ViIjoiNjkyZGJhOTMyMmU3YzY3YWIyMjg2NzU0Iiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.nDT1Qsd8RkY7ex-GJNCpQGjB5eQ-y689zu1yoQnEjws";
 const BASE_URL = "https://api.themoviedb.org/3";
 
+const memoryCache = new Map();
+
+const CACHE_TTL = 5 * 60 * 1000;
+
 async function fetchData(endpoint, language = "en-US") {
+  const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+
+  if (!API_KEY) {
+    throw new Error("API Key tidak boleh kosong");
+  }
+
   const url = `${BASE_URL}${endpoint}?language=${language}`;
+  const cacheKey = `${endpoint}_${language}`;
+
+  if (memoryCache.has(cacheKey)) {
+    const { timestamp, data } = memoryCache.get(cacheKey);
+    const isValid = Date.now() - timestamp < CACHE_TTL;
+
+    if (isValid) {
+      console.log(`✅ Load from MEMORY CACHE: ${cacheKey}`);
+      return data;
+    }
+  }
+
+  const localData = localStorage.getItem(cacheKey);
+  if (localData) {
+    const parsed = JSON.parse(localData);
+    const isValid = Date.now() - parsed.timestamp < CACHE_TTL;
+
+    if (isValid) {
+      console.log(`🔵 Load from LOCAL STORAGE CACHE: ${cacheKey}`);
+
+      // Masukkan kembali ke memory cache
+      memoryCache.set(cacheKey, {
+        data: parsed.data,
+        timestamp: parsed.timestamp,
+      });
+
+      return parsed.data;
+    }
+  }
+
+  console.log(`🌐 Fetching from API: ${cacheKey}`);
 
   const options = {
     method: "GET",
@@ -16,15 +55,26 @@ async function fetchData(endpoint, language = "en-US") {
   try {
     const res = await fetch(url, options);
 
-    if (!res.ok) {
-      throw new Error(`HTTP Error: ${res.status}`);
-    }
+    if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
 
     const data = await res.json();
-    console.log(data);
+
+    memoryCache.set(cacheKey, {
+      data,
+      timestamp: Date.now(),
+    });
+
+    localStorage.setItem(
+      cacheKey,
+      JSON.stringify({
+        data,
+        timestamp: Date.now(),
+      })
+    );
+
     return data;
   } catch (err) {
-    console.error("TMDB Popular Movies Error:", err.message);
+    console.error("TMDB Error:", err.message);
     throw err;
   }
 }

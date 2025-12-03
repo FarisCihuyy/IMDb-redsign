@@ -1,3 +1,4 @@
+import Carousel from "./components/Carousel";
 import Hero from "./layout/Hero";
 import Navbar from "./layout/Navbar";
 
