@@ -13,23 +13,14 @@ body {
   @apply bg-background text-primary font-Inter;
 }
 
-.scrollbar::-webkit-scrollbar {
-  width: 8px;
-}
-
-.scrollbar::-webkit-scrollbar-track {
-  background: #1e1e1e;
-}
-.scrollbar::-webkit-scrollbar-button {
+/* Hilangkan semua tombol arrow di Chrome/Edge */
+.no-scrollbar::-webkit-scrollbar {
   display: none;
 }
-
-.scrollbar::-webkit-scrollbar-thumb {
-  background: #555;
-  border-radius: 10px;
+.no-scrollbar {
+  scrollbar-width: none; /* Firefox */
 }
 
-.scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: #555 #1e1e1e;
+.bookmark {
+  clip-path: polygon(100% 0, 100% 100%, 50% 70%, 0 100%, 0 0);
 }

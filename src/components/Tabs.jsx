@@ -6,9 +6,11 @@ export default function Tabs({ active, onChange }) {
       {tabs.map((tab) => (
         <button
           key={tab}
-          onClick={() => onChange(tab)}
+          onClick={() => onChange(tab.toLowerCase())}
           className={`pb-1 transition-colors cursor-pointer select-none ${
-            active === tab ? "border-b-2 border-white" : "text-gray-400"
+            active === tab.toLowerCase()
+              ? "border-b-2 border-white"
+              : "text-gray-400"
           }`}
         >
           {tab}

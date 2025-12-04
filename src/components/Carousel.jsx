@@ -78,7 +78,10 @@ export default function Carousel({ items = ["Item 1", "Item 2", "Item 3"] }) {
               {/* Content */}
               <div className="relative z-10 space-y-6 max-w-md">
                 <h1 className="font-bold text-5xl text-white drop-shadow-2xl">
-                  {item.original_title || item.original_name || "Untitled"}
+                  {item.title ||
+                    item.original_title ||
+                    item.original_name ||
+                    item.name}
                 </h1>
                 <div className="flex gap-2.5 text-xs">
                   <GenreBadge genres={genres} />

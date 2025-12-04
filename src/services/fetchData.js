@@ -7,6 +7,8 @@ const CACHE_TTL = 5 * 60 * 1000;
 async function fetchData(endpoint, language = "en-US") {
   const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
+  console.log(endpoint);
+
   if (!API_KEY) {
     throw new Error("API Key tidak boleh kosong");
   }

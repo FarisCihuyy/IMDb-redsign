@@ -1,359 +1,99 @@
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Tabs from "../components/Tabs";
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
-import { PlayIcon } from "@heroicons/react/20/solid";
+import Card from "../components/Card";
+import { fetchData } from "../services/fetchData";
+import CardSkeleton from "../components/CardSkeleton";
 
 const WatchPage = () => {
-  const [activeTab, setActiveTab] = useState("All");
+  const [activeTab, setActiveTab] = useState("all");
+  const [watchList, setWatchList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
+
+  const abortControllerRef = useRef(null);
+
+  useEffect(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
+
+    const type =
+      activeTab === "movies"
+        ? "movie"
+        : activeTab === "tv shows"
+        ? "tv"
+        : "all";
+
+    async function getTrending() {
+      try {
+        const data = await fetchData(`/trending/${type}/day`, {
+          signal: abortControllerRef.current.signal,
+        });
+
+        setWatchList(data?.results || []);
+
+        if (!hasLoaded) {
+          setTimeout(() => {
+            setLoading(false);
+            setHasLoaded(true);
+          }, 1200);
+        } else {
+          setLoading(false);
+        }
+      } catch (err) {
+        if (err.name === "AbortError") return;
+
+        console.error(err);
+        setError(true);
+        setLoading(false);
+      }
+    }
+
+    getTrending();
+
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, [activeTab, hasLoaded]);
 
   return (
-    <section className="my-28 px-12 space-y-10">
-      <div className="space-y-8">
-        <h1 className="text-accent text-2xl font-bold">What to watch</h1>
+    <section className="my-28 px-12">
+      <h1 className="text-accent mb-8 text-2xl font-bold">What to watch</h1>
+      <div className="space-y-10">
         <p className="relative px-4 py-1 font-medium before:absolute before:top-0 before:left-0 before:bottom-0 before:w-1 before:bg-accent before:rounded-full">
           Top picks just for you
         </p>
+
+        <Tabs active={activeTab} onChange={setActiveTab} />
+
+        <div className="no-scrollbar flex gap-4 items-start overflow-x-auto">
+          {!hasLoaded && loading ? (
+            <>
+              <CardSkeleton />
+              <CardSkeleton />
+              <CardSkeleton />
+            </>
+          ) : error ? (
+            <p className="text-gray-300">Error loading data</p>
+          ) : watchList.length > 0 ? (
+            watchList.map((item) => <Card key={item.id} data={item} />)
+          ) : null}
+        </div>
       </div>
-      <Tabs active={activeTab} onChange={setActiveTab} />
-      <div className="scrollbar scroll-no-arrow pb-8 flex gap-8 items-center overflow-x-auto">
-        <article className="shrink-0 w-48 min-h-[420px] bg-foreground/80 rounded-lg space-y-4 overflow-hidden">
-          <div className="h-64">
-            <img
-              src="/assets/images/banner.png"
-              alt=""
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="px-2 pb-4 space-y-2">
-            <div className="flex justify-between items-start gap-4">
-              <h2 className="font-medium">Dune: A New Hope </h2>
-              <InformationCircleIcon className="h-6 w-6" />
-            </div>
-            <p className="text-sm text-gray-400">Advanture</p>
-            <p className="text-xs flex items-center gap-1">
-              <span className="text-sm">⭐</span> 8.2
-            </p>
-            <button className="px-6 py-2 text-blue-500 text-sm bg-foreground rounded-lg flex items-center gap-1 hover:bg-blue-500/10 transition mx-auto mt-4 cursor-pointer">
-              <PlayIcon className="h-5 w-5" />
-              <span>Watch Trailer</span>
-            </button>
-            <h5 className="text-[10px] font-light mx-auto text-center">
-              Watch on: 🎬
-            </h5>
-          </div>
-        </article>
-        <article className="shrink-0 w-48 min-h-[420px] bg-foreground/80 rounded-lg space-y-4 overflow-hidden">
-          <div className="h-64">
-            <img
-              src="/assets/images/banner.png"
-              alt=""
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="px-2 pb-4 space-y-2">
-            <div className="flex justify-between items-start gap-4">
-              <h2 className="font-medium">Dune: A New Hope </h2>
-              <InformationCircleIcon className="h-6 w-6" />
-            </div>
-            <p className="text-sm text-gray-400">Advanture</p>
-            <p className="text-xs flex items-center gap-1">
-              <span className="text-sm">⭐</span> 8.2
-            </p>
-            <button className="px-6 py-2 text-blue-500 text-sm bg-foreground rounded-lg flex items-center gap-1 hover:bg-blue-500/10 transition mx-auto mt-4 cursor-pointer">
-              <PlayIcon className="h-5 w-5" />
-              <span>Watch Trailer</span>
-            </button>
-            <h5 className="text-[10px] font-light mx-auto text-center">
-              Watch on: 🎬
-            </h5>
-          </div>
-        </article>
-        <article className="shrink-0 w-48 min-h-[420px] bg-foreground/80 rounded-lg space-y-4 overflow-hidden">
-          <div className="h-64">
-            <img
-              src="/assets/images/banner.png"
-              alt=""
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="px-2 pb-4 space-y-2">
-            <div className="flex justify-between items-start gap-4">
-              <h2 className="font-medium">Dune: A New Hope </h2>
-              <InformationCircleIcon className="h-6 w-6" />
-            </div>
-            <p className="text-sm text-gray-400">Advanture</p>
-            <p className="text-xs flex items-center gap-1">
-              <span className="text-sm">⭐</span> 8.2
-            </p>
-            <button className="px-6 py-2 text-blue-500 text-sm bg-foreground rounded-lg flex items-center gap-1 hover:bg-blue-500/10 transition mx-auto mt-4 cursor-pointer">
-              <PlayIcon className="h-5 w-5" />
-              <span>Watch Trailer</span>
-            </button>
-            <h5 className="text-[10px] font-light mx-auto text-center">
-              Watch on: 🎬
-            </h5>
-          </div>
-        </article>
-        <article className="shrink-0 w-48 min-h-[420px] bg-foreground/80 rounded-lg space-y-4 overflow-hidden">
-          <div className="h-64">
-            <img
-              src="/assets/images/banner.png"
-              alt=""
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="px-2 pb-4 space-y-2">
-            <div className="flex justify-between items-start gap-4">
-              <h2 className="font-medium">Dune: A New Hope </h2>
-              <InformationCircleIcon className="h-6 w-6" />
-            </div>
-            <p className="text-sm text-gray-400">Advanture</p>
-            <p className="text-xs flex items-center gap-1">
-              <span className="text-sm">⭐</span> 8.2
-            </p>
-            <button className="px-6 py-2 text-blue-500 text-sm bg-foreground rounded-lg flex items-center gap-1 hover:bg-blue-500/10 transition mx-auto mt-4 cursor-pointer">
-              <PlayIcon className="h-5 w-5" />
-              <span>Watch Trailer</span>
-            </button>
-            <h5 className="text-[10px] font-light mx-auto text-center">
-              Watch on: 🎬
-            </h5>
-          </div>
-        </article>
-        <article className="shrink-0 w-48 min-h-[420px] bg-foreground/80 rounded-lg space-y-4 overflow-hidden">
-          <div className="h-64">
-            <img
-              src="/assets/images/banner.png"
-              alt=""
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="px-2 pb-4 space-y-2">
-            <div className="flex justify-between items-start gap-4">
-              <h2 className="font-medium">Dune: A New Hope </h2>
-              <InformationCircleIcon className="h-6 w-6" />
-            </div>
-            <p className="text-sm text-gray-400">Advanture</p>
-            <p className="text-xs flex items-center gap-1">
-              <span className="text-sm">⭐</span> 8.2
-            </p>
-            <button className="px-6 py-2 text-blue-500 text-sm bg-foreground rounded-lg flex items-center gap-1 hover:bg-blue-500/10 transition mx-auto mt-4 cursor-pointer">
-              <PlayIcon className="h-5 w-5" />
-              <span>Watch Trailer</span>
-            </button>
-            <h5 className="text-[10px] font-light mx-auto text-center">
-              Watch on: 🎬
-            </h5>
-          </div>
-        </article>
-        <article className="shrink-0 w-48 min-h-[420px] bg-foreground/80 rounded-lg space-y-4 overflow-hidden">
-          <div className="h-64">
-            <img
-              src="/assets/images/banner.png"
-              alt=""
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="px-2 pb-4 space-y-2">
-            <div className="flex justify-between items-start gap-4">
-              <h2 className="font-medium">Dune: A New Hope </h2>
-              <InformationCircleIcon className="h-6 w-6" />
-            </div>
-            <p className="text-sm text-gray-400">Advanture</p>
-            <p className="text-xs flex items-center gap-1">
-              <span className="text-sm">⭐</span> 8.2
-            </p>
-            <button className="px-6 py-2 text-blue-500 text-sm bg-foreground rounded-lg flex items-center gap-1 hover:bg-blue-500/10 transition mx-auto mt-4 cursor-pointer">
-              <PlayIcon className="h-5 w-5" />
-              <span>Watch Trailer</span>
-            </button>
-            <h5 className="text-[10px] font-light mx-auto text-center">
-              Watch on: 🎬
-            </h5>
-          </div>
-        </article>
-        <article className="shrink-0 w-48 min-h-[420px] bg-foreground/80 rounded-lg space-y-4 overflow-hidden">
-          <div className="h-64">
-            <img
-              src="/assets/images/banner.png"
-              alt=""
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="px-2 pb-4 space-y-2">
-            <div className="flex justify-between items-start gap-4">
-              <h2 className="font-medium">Dune: A New Hope </h2>
-              <InformationCircleIcon className="h-6 w-6" />
-            </div>
-            <p className="text-sm text-gray-400">Advanture</p>
-            <p className="text-xs flex items-center gap-1">
-              <span className="text-sm">⭐</span> 8.2
-            </p>
-            <button className="px-6 py-2 text-blue-500 text-sm bg-foreground rounded-lg flex items-center gap-1 hover:bg-blue-500/10 transition mx-auto mt-4 cursor-pointer">
-              <PlayIcon className="h-5 w-5" />
-              <span>Watch Trailer</span>
-            </button>
-            <h5 className="text-[10px] font-light mx-auto text-center">
-              Watch on: 🎬
-            </h5>
-          </div>
-        </article>
-        <article className="shrink-0 w-48 min-h-[420px] bg-foreground/80 rounded-lg space-y-4 overflow-hidden">
-          <div className="h-64">
-            <img
-              src="/assets/images/banner.png"
-              alt=""
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="px-2 pb-4 space-y-2">
-            <div className="flex justify-between items-start gap-4">
-              <h2 className="font-medium">Dune: A New Hope </h2>
-              <InformationCircleIcon className="h-6 w-6" />
-            </div>
-            <p className="text-sm text-gray-400">Advanture</p>
-            <p className="text-xs flex items-center gap-1">
-              <span className="text-sm">⭐</span> 8.2
-            </p>
-            <button className="px-6 py-2 text-blue-500 text-sm bg-foreground rounded-lg flex items-center gap-1 hover:bg-blue-500/10 transition mx-auto mt-4 cursor-pointer">
-              <PlayIcon className="h-5 w-5" />
-              <span>Watch Trailer</span>
-            </button>
-            <h5 className="text-[10px] font-light mx-auto text-center">
-              Watch on: 🎬
-            </h5>
-          </div>
-        </article>
-        <article className="shrink-0 w-48 min-h-[420px] bg-foreground/80 rounded-lg space-y-4 overflow-hidden">
-          <div className="h-64">
-            <img
-              src="/assets/images/banner.png"
-              alt=""
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="px-2 pb-4 space-y-2">
-            <div className="flex justify-between items-start gap-4">
-              <h2 className="font-medium">Dune: A New Hope </h2>
-              <InformationCircleIcon className="h-6 w-6" />
-            </div>
-            <p className="text-sm text-gray-400">Advanture</p>
-            <p className="text-xs flex items-center gap-1">
-              <span className="text-sm">⭐</span> 8.2
-            </p>
-            <button className="px-6 py-2 text-blue-500 text-sm bg-foreground rounded-lg flex items-center gap-1 hover:bg-blue-500/10 transition mx-auto mt-4 cursor-pointer">
-              <PlayIcon className="h-5 w-5" />
-              <span>Watch Trailer</span>
-            </button>
-            <h5 className="text-[10px] font-light mx-auto text-center">
-              Watch on: 🎬
-            </h5>
-          </div>
-        </article>
-        <article className="shrink-0 w-48 min-h-[420px] bg-foreground/80 rounded-lg space-y-4 overflow-hidden">
-          <div className="h-64">
-            <img
-              src="/assets/images/banner.png"
-              alt=""
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="px-2 pb-4 space-y-2">
-            <div className="flex justify-between items-start gap-4">
-              <h2 className="font-medium">Dune: A New Hope </h2>
-              <InformationCircleIcon className="h-6 w-6" />
-            </div>
-            <p className="text-sm text-gray-400">Advanture</p>
-            <p className="text-xs flex items-center gap-1">
-              <span className="text-sm">⭐</span> 8.2
-            </p>
-            <button className="px-6 py-2 text-blue-500 text-sm bg-foreground rounded-lg flex items-center gap-1 hover:bg-blue-500/10 transition mx-auto mt-4 cursor-pointer">
-              <PlayIcon className="h-5 w-5" />
-              <span>Watch Trailer</span>
-            </button>
-            <h5 className="text-[10px] font-light mx-auto text-center">
-              Watch on: 🎬
-            </h5>
-          </div>
-        </article>
-        <article className="shrink-0 w-48 min-h-[420px] bg-foreground/80 rounded-lg space-y-4 overflow-hidden">
-          <div className="h-64">
-            <img
-              src="/assets/images/banner.png"
-              alt=""
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="px-2 pb-4 space-y-2">
-            <div className="flex justify-between items-start gap-4">
-              <h2 className="font-medium">Dune: A New Hope </h2>
-              <InformationCircleIcon className="h-6 w-6" />
-            </div>
-            <p className="text-sm text-gray-400">Advanture</p>
-            <p className="text-xs flex items-center gap-1">
-              <span className="text-sm">⭐</span> 8.2
-            </p>
-            <button className="px-6 py-2 text-blue-500 text-sm bg-foreground rounded-lg flex items-center gap-1 hover:bg-blue-500/10 transition mx-auto mt-4 cursor-pointer">
-              <PlayIcon className="h-5 w-5" />
-              <span>Watch Trailer</span>
-            </button>
-            <h5 className="text-[10px] font-light mx-auto text-center">
-              Watch on: 🎬
-            </h5>
-          </div>
-        </article>
-        <article className="shrink-0 w-48 min-h-[420px] bg-foreground/80 rounded-lg space-y-4 overflow-hidden">
-          <div className="h-64">
-            <img
-              src="/assets/images/banner.png"
-              alt=""
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="px-2 pb-4 space-y-2">
-            <div className="flex justify-between items-start gap-4">
-              <h2 className="font-medium">Dune: A New Hope </h2>
-              <InformationCircleIcon className="h-6 w-6" />
-            </div>
-            <p className="text-sm text-gray-400">Advanture</p>
-            <p className="text-xs flex items-center gap-1">
-              <span className="text-sm">⭐</span> 8.2
-            </p>
-            <button className="px-6 py-2 text-blue-500 text-sm bg-foreground rounded-lg flex items-center gap-1 hover:bg-blue-500/10 transition mx-auto mt-4 cursor-pointer">
-              <PlayIcon className="h-5 w-5" />
-              <span>Watch Trailer</span>
-            </button>
-            <h5 className="text-[10px] font-light mx-auto text-center">
-              Watch on: 🎬
-            </h5>
-          </div>
-        </article>
-        <article className="shrink-0 w-48 min-h-[420px] bg-foreground/80 rounded-lg space-y-4 overflow-hidden">
-          <div className="h-64">
-            <img
-              src="/assets/images/banner.png"
-              alt=""
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="px-2 pb-4 space-y-2">
-            <div className="flex justify-between items-start gap-4">
-              <h2 className="font-medium">Dune: A New Hope </h2>
-              <InformationCircleIcon className="h-6 w-6" />
-            </div>
-            <p className="text-sm text-gray-400">Advanture</p>
-            <p className="text-xs flex items-center gap-1">
-              <span className="text-sm">⭐</span> 8.2
-            </p>
-            <button className="px-6 py-2 text-blue-500 text-sm bg-foreground rounded-lg flex items-center gap-1 hover:bg-blue-500/10 transition mx-auto mt-4 cursor-pointer">
-              <PlayIcon className="h-5 w-5" />
-              <span>Watch Trailer</span>
-            </button>
-            <h5 className="text-[10px] font-light mx-auto text-center">
-              Watch on: 🎬
-            </h5>
-          </div>
-        </article>
+      <div className="mt-24 space-y-10">
+        <p className="relative px-4 py-1 font-medium before:absolute before:top-0 before:left-0 before:bottom-0 before:w-1 before:bg-accent before:rounded-full">
+          From your watchlist
+        </p>
+
+        <div className="min-h-72">
+          <h1 className="font-medium text-2xl text-center text-gray-400/70">
+            Your watchlist is empty.
+          </h1>
+        </div>
       </div>
     </section>
   );
