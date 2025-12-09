@@ -1,16 +1,16 @@
-const BASE_URL = "https://api.themoviedb.org/3";
+const BASE_URL = 'https://api.themoviedb.org/3';
 
 const memoryCache = new Map();
 
 const CACHE_TTL = 5 * 60 * 1000;
 
-async function fetchData(endpoint, language = "en-US") {
+async function fetchData(endpoint, language = 'en-US') {
   const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
   console.log(endpoint);
 
   if (!API_KEY) {
-    throw new Error("API Key tidak boleh kosong");
+    throw new Error('API Key tidak boleh kosong');
   }
 
   const url = `${BASE_URL}${endpoint}?language=${language}`;
@@ -46,9 +46,9 @@ async function fetchData(endpoint, language = "en-US") {
   console.log(`🌐 Fetching from API: ${cacheKey}`);
 
   const options = {
-    method: "GET",
+    method: 'GET',
     headers: {
-      accept: "application/json",
+      accept: 'application/json',
       Authorization: `Bearer ${API_KEY}`,
     },
   };
@@ -75,7 +75,7 @@ async function fetchData(endpoint, language = "en-US") {
 
     return data;
   } catch (err) {
-    console.error("TMDB Error:", err.message);
+    console.error('TMDB Error:', err.message);
     throw err;
   }
 }
