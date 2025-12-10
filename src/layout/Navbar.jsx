@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BookmarkIcon,
   ChevronDownIcon,
@@ -9,8 +9,38 @@ import {
 const Navbar = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [query, setQuery] = useState("");
+  const [data, setData] = useState([]);
 
-  const apiKey = import.meta.env.VITE_API_KEY;
+  const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+
+  const handleChange = (e) => {
+    setQuery(e.target.value);
+  };
+
+  useEffect(() => {
+    if (query.trim() === "") return;
+
+    const getData = async () => {
+      try {
+        const res = await fetch(
+          `https://api.themoviedb.org/3/search/keyword?query=${query}`,
+          {
+            method: "GET",
+            headers: {
+              accept: "application/json",
+              Authorization: `Bearer ${apiKey}`,
+            },
+          }
+        );
+        const data = await res.json();
+        setData(data.results);
+        console.log("HASIL SEARCH:", data.results);
+      } catch (err) {
+        console.log("Search Error:", err);
+      }
+    };
+    getData();
+  }, [query]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -19,11 +49,11 @@ const Navbar = () => {
 
     try {
       const res = await fetch(
-        `https://api.themoviedb.org/3/search/movie?query=${query}&api_key=${apiKey}`
+        `https://api.themoviedb.org/3/search/keyword?query=${query}&api_key=${apiKey}`
       );
       const data = await res.json();
 
-      console.log("HASIL SEARCH:", data.results); 
+      console.log("HASIL SEARCH:", data.results);
     } catch (err) {
       console.log("Search Error:", err);
     }
@@ -54,9 +84,31 @@ const Navbar = () => {
 
         <div className="flex gap-8 items-center">
           {/*  TOMBOL SEARCH */}
-          <button onClick={() => setShowSearch(!showSearch)}>
-            <MagnifyingGlassIcon className="h-6 w-6 cursor-pointer" />
-          </button>
+          {/* <button onClick={() => setShowSearch(!showSearch)}>
+          </button> */}
+          <div className="relative space-y-2">
+            <label
+              htmlFor="id"
+              className=" border border-gray-200 p-1 rounded-full flex gap-2"
+            >
+              <MagnifyingGlassIcon className="h-6 w-6 cursor-pointer opacity-70 pointer-events-none" />
+              <input
+                placeholder="search..."
+                type="text"
+                id="search"
+                value={query}
+                onChange={handleChange}
+                className="outline-0 text-sm placeholder:opacity-70"
+              />
+            </label>
+            {data.length > 0 && (
+              <ul className ="*:px-2 *:border-b *:border-gray-300/30 bg-foreground/80 rounded-xl text-sm *:py-4 absolute w-full *:hover:bg-foreground/50 *:cursor-pointer *:transition-colors max-h-72 overflow-y-auto" >
+                {data.map((title) => (
+                  <li key={title.id}> <Link to={`/detail `}></Link>  {title.name}</li>
+                ))}
+              </ul>
+            )}
+          </div>
 
           <div className="flex gap-1">
             <BookmarkIcon className="h-6 w-6" />
