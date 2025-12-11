@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   BookmarkIcon,
   ChevronDownIcon,
   MagnifyingGlassIcon,
   UserCircleIcon,
-} from "@heroicons/react/16/solid";
+} from '@heroicons/react/16/solid';
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   const [showSearch, setShowSearch] = useState(false);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   const [data, setData] = useState([]);
 
   const apiKey = import.meta.env.VITE_TMDB_API_KEY;
@@ -18,25 +19,25 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    if (query.trim() === "") return;
+    if (query.trim() === '') return;
 
     const getData = async () => {
       try {
         const res = await fetch(
           `https://api.themoviedb.org/3/search/keyword?query=${query}`,
           {
-            method: "GET",
+            method: 'GET',
             headers: {
-              accept: "application/json",
+              accept: 'application/json',
               Authorization: `Bearer ${apiKey}`,
             },
           }
         );
         const data = await res.json();
         setData(data.results);
-        console.log("HASIL SEARCH:", data.results);
+        console.log('HASIL SEARCH:', data.results);
       } catch (err) {
-        console.log("Search Error:", err);
+        console.log('Search Error:', err);
       }
     };
     getData();
@@ -45,7 +46,7 @@ const Navbar = () => {
   const handleSearch = async (e) => {
     e.preventDefault();
 
-    if (query.trim() === "") return;
+    if (query.trim() === '') return;
 
     try {
       const res = await fetch(
@@ -53,9 +54,9 @@ const Navbar = () => {
       );
       const data = await res.json();
 
-      console.log("HASIL SEARCH:", data.results);
+      console.log('HASIL SEARCH:', data.results);
     } catch (err) {
-      console.log("Search Error:", err);
+      console.log('Search Error:', err);
     }
   };
 
@@ -63,9 +64,11 @@ const Navbar = () => {
     <>
       <nav className="absolute z-20 top-0 left-0 right-0 flex justify-between items-center px-8 py-4 bg-gradient-to-t from-transparent to-black/80">
         <div className="flex gap-12 items-center">
-          <h1 className="px-2 py-1 bg-accent text-2xl text-black font-black rounded">
-            IMDb
-          </h1>
+          <Link to="/">
+            <h1 className="px-2 py-1 bg-accent text-2xl text-black font-black rounded">
+              IMDb
+            </h1>
+          </Link>
           <ul className="flex gap-8">
             <li className="transition-colors hover:underline">
               <a href="#">Movies</a>
@@ -102,9 +105,12 @@ const Navbar = () => {
               />
             </label>
             {data.length > 0 && (
-              <ul className ="*:px-2 *:border-b *:border-gray-300/30 bg-foreground/80 rounded-xl text-sm *:py-4 absolute w-full *:hover:bg-foreground/50 *:cursor-pointer *:transition-colors max-h-72 overflow-y-auto" >
+              <ul className="*:px-2 *:border-b *:border-gray-300/30 bg-foreground/80 rounded-xl text-sm *:py-4 absolute w-full *:hover:bg-foreground/50 *:cursor-pointer *:transition-colors max-h-72 overflow-y-auto">
                 {data.map((title) => (
-                  <li key={title.id}> <Link to={`/detail `}></Link>  {title.name}</li>
+                  <li key={title.id}>
+                    {' '}
+                    <Link to={`/detail `}></Link> {title.name}
+                  </li>
                 ))}
               </ul>
             )}

@@ -1,8 +1,11 @@
-import { PlayIcon, PlusIcon } from '@heroicons/react/16/solid';
+import { PlayIcon, PlusIcon, CheckIcon } from '@heroicons/react/16/solid';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useWatchlist } from '../context/WatchlistContext';
 
 const Card = ({ data }) => {
+  const navigate = useNavigate();
+  const { watchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
   const {
     id,
     title,
@@ -17,6 +20,9 @@ const Card = ({ data }) => {
   poster_path;
 
   const movieName = title || original_title || original_name || name;
+
+  // Cek movie watchlist
+  const isAdded = watchlist.some((m) => m.id === id);
 
   // ============================
   // 1. CEK FILM BARU (≤ 30 hari)
@@ -36,8 +42,18 @@ const Card = ({ data }) => {
   return (
     <article className="shrink-0 relative w-48 h-[420px] min-h-full bg-foreground/80 rounded-lg space-y-4 overflow-hidden">
       {/* Bookmark */}
-      <div className="group bookmark absolute top-0 left-0 w-10 h-14 bg-foreground/90">
-        <PlusIcon className="group-hover:scale-110 h-6 w-6 absolute top-2 left-1/2 -translate-x-1/2 transition-transform cursor-pointer" />
+      <div
+        onClick={() =>
+          isAdded ? removeFromWatchlist(id) : addToWatchlist(data)
+        }
+        className={`group bookmark absolute top-0 left-0 w-10 h-14 cursor-pointer 
+        ${isAdded ? 'bg-yellow-400' : 'bg-foreground/90'}`}
+      >
+        {isAdded ? (
+          <CheckIcon className="group-hover:scale-110 h-6 w-6 absolute top-2 left-1/2 -translate-x-1/2 transition-transform bg-yellow-400 text-black" />
+        ) : (
+          <PlusIcon className="group-hover:scale-110 h-6 w-6 absolute top-2 left-1/2 -translate-x-1/2 transition-transform" />
+        )}
       </div>
 
       {/* ============================

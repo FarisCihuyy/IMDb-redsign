@@ -1,6 +1,8 @@
+import { Link } from 'react-router-dom';
+
 function Footer() {
   return (
-    <footer className="bg-[#0f0f0f] text-gray-300 py-10 mt-10">
+    <footer className="bg-[#0f0f0f] text-gray-300 py-10">
       <div className="max-w-7xl mx-auto px-6">
         {/* Brand */}
         <h2
@@ -15,21 +17,21 @@ function Footer() {
 
         {/* Menu */}
         <div className="mt-6 flex justify-center gap-6 text-sm">
-          <a href="#" className="hover:text-white">
+          <Link to="/" className="hover:text-white">
             Home
-          </a>
-          <a href="#" className="hover:text-white">
+          </Link>
+          <Link to="#" className="hover:text-white">
             Film
-          </a>
-          <a href="#" className="hover:text-white">
+          </Link>
+          <Link to="#" className="hover:text-white">
             Series
-          </a>
-          <a href="#" className="hover:text-white">
+          </Link>
+          <Link to="#" className="hover:text-white">
             Genre
-          </a>
-          <a href="#" className="hover:text-white">
+          </Link>
+          <Link to="#" className="hover:text-white">
             Request
-          </a>
+          </Link>
         </div>
 
         {/* Divider */}

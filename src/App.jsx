@@ -7,13 +7,17 @@ import Register from './layout/Register';
 import Home from './pages/home';
 import Detail from './pages/detail';
 import './index.css';
+import { WatchlistProvider } from './context/WatchlistContext';
+
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/detail/:id" element={<Detail />} />
-    </Routes>
+    <WatchlistProvider>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/detail/:id" element={<Detail />} />
+      </Routes>
+    </WatchlistProvider>
   );
 }
