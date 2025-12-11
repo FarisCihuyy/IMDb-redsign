@@ -3,6 +3,7 @@ import Tabs from '../components/Tabs';
 import Card from '../components/Card';
 import { fetchData } from '../services/fetchData';
 import CardSkeleton from '../components/CardSkeleton';
+import ScrollButton from '../components/ScrollButton';
 
 const FreshOnDemand = () => {
   const [activeTab, setActiveTab] = useState('all');
@@ -19,7 +20,6 @@ const FreshOnDemand = () => {
     }
     abortControllerRef.current = new AbortController();
 
-    // Endpoint film baru
     const endpoint =
       activeTab === 'movies'
         ? '/movie/now_playing'
@@ -70,7 +70,8 @@ const FreshOnDemand = () => {
 
         <Tabs active={activeTab} onChange={setActiveTab} />
 
-        <div className="no-scrollbar flex gap-4 items-start overflow-x-auto">
+        {/* LIST CARD */}
+        <ScrollButton>
           {!hasLoaded && loading ? (
             <>
               <CardSkeleton />
@@ -82,7 +83,7 @@ const FreshOnDemand = () => {
           ) : freshList.length > 0 ? (
             freshList.map((item) => <Card key={item.id} data={item} />)
           ) : null}
-        </div>
+        </ScrollButton>
       </div>
     </section>
   );

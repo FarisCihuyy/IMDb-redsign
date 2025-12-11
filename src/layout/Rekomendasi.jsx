@@ -1,8 +1,8 @@
-// layout/RecommendedMovies.jsx
 import { useEffect, useState, useRef } from 'react';
 import Card from '../components/Card';
 import CardSkeleton from '../components/CardSkeleton';
 import { fetchData } from '../services/fetchData';
+import ScrollButton from '../components/ScrollButton';
 
 export default function RecommendedMovies({ genreIds = [] }) {
   const [recommendations, setRecommendations] = useState([]);
@@ -44,7 +44,7 @@ export default function RecommendedMovies({ genreIds = [] }) {
   }, [genreIds]);
 
   return (
-    <section className="my-20 px-4 md:px-16">
+    <section className="mt-20 px-4 pb-20 md:px-16">
       <h1 className="text-accent mb-8 text-2xl font-bold">
         You Might Also Like
       </h1>
@@ -56,7 +56,7 @@ export default function RecommendedMovies({ genreIds = [] }) {
         </p>
 
         {/* LIST REKOMENDASI */}
-        <div className="no-scrollbar flex gap-4 items-start overflow-x-auto">
+        <ScrollButton>
           {loading ? (
             <>
               <CardSkeleton />
@@ -70,7 +70,7 @@ export default function RecommendedMovies({ genreIds = [] }) {
           ) : (
             <p className="text-gray-300">No recommendations available</p>
           )}
-        </div>
+        </ScrollButton>
       </div>
     </section>
   );
