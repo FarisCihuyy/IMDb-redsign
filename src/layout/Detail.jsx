@@ -1,7 +1,7 @@
-import { useParams, useSearchParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { fetchData } from '../services/fetchData';
-import Rekomendasi from './Rekomendasi';
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { fetchData } from "../services/fetchData";
+import Rekomendasi from "./Rekomendasi";
 
 // Rating Stars
 const RatingStars = ({ score }) => {
@@ -12,7 +12,7 @@ const RatingStars = ({ score }) => {
       <span
         key={index}
         className={`text-xl ${
-          index < fullStars ? 'text-yellow-500' : 'text-gray-400'
+          index < fullStars ? "text-yellow-500" : "text-gray-400"
         }`}
       >
         ★
@@ -22,9 +22,7 @@ const RatingStars = ({ score }) => {
 };
 
 export default function MovieDetail() {
-  const { id } = useParams();
-  const [searchParams] = useSearchParams();
-  const type = searchParams.get('type') || 'movie';
+  const { media_type: type, id } = useParams();
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -38,7 +36,7 @@ export default function MovieDetail() {
         const result = await fetchData(`/${type}/${id}`);
         setData(result);
       } catch (err) {
-        console.error('Error fetching detail:', err);
+        console.error("Error fetching detail:", err);
         setError(true);
       } finally {
         setLoading(false);
@@ -75,8 +73,7 @@ export default function MovieDetail() {
   const displayTitle = title || name;
   const displayDate = release_date || first_air_date;
   const displayRuntime =
-    runtime || (episode_run_time && episode_run_time[0]) || 'N/A';
-  const genreList = genres?.map((g) => g.name).join(', ');
+    runtime || (episode_run_time && episode_run_time[0]) || "N/A";
 
   return (
     <div className="min-h-screen bg-gray-900 text-white font-sans">
@@ -157,11 +154,11 @@ export default function MovieDetail() {
             </div>
             <div className="flex justify-between">
               <span className="font-semibold text-gray-400">Budget:</span>
-              <span>{budget || 'N/A'}</span>
+              <span>{budget || "N/A"}</span>
             </div>
             <div className="flex justify-between">
               <span className="font-semibold text-gray-400">Revenue:</span>
-              <span>{revenue || 'N/A'}</span>
+              <span>{revenue || "N/A"}</span>
             </div>
             <div className="flex justify-between">
               <span className="font-semibold text-gray-400">Language:</span>

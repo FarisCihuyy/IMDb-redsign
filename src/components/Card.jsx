@@ -1,7 +1,7 @@
-import { PlayIcon, PlusIcon, CheckIcon } from '@heroicons/react/16/solid';
-import { InformationCircleIcon } from '@heroicons/react/24/outline';
-import { Link, useNavigate } from 'react-router-dom';
-import { useWatchlist } from '../context/WatchlistContext';
+import { PlayIcon, PlusIcon, CheckIcon } from "@heroicons/react/16/solid";
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import { Link, useNavigate } from "react-router-dom";
+import { useWatchlist } from "../context/WatchlistContext";
 
 const Card = ({ data }) => {
   const navigate = useNavigate();
@@ -11,13 +11,13 @@ const Card = ({ data }) => {
     title,
     original_title,
     original_name,
+    media_type,
     name,
     poster_path,
     genre,
     release_date,
     first_air_date,
   } = data;
-  poster_path;
 
   const movieName = title || original_title || original_name || name;
 
@@ -47,7 +47,7 @@ const Card = ({ data }) => {
           isAdded ? removeFromWatchlist(id) : addToWatchlist(data)
         }
         className={`group bookmark absolute top-0 left-0 w-10 h-14 cursor-pointer 
-        ${isAdded ? 'bg-yellow-400' : 'bg-foreground/90'}`}
+        ${isAdded ? "bg-yellow-400" : "bg-foreground/90"}`}
       >
         {isAdded ? (
           <CheckIcon className="group-hover:scale-110 h-6 w-6 absolute top-2 left-1/2 -translate-x-1/2 transition-transform bg-yellow-400 text-black" />
@@ -56,9 +56,6 @@ const Card = ({ data }) => {
         )}
       </div>
 
-      {/* ============================
-          2. BADGE NEW 🔥
-          ============================ */}
       {isNew && (
         <span className="absolute top-2 right-2 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-md shadow">
           NEW 🔥
@@ -66,7 +63,7 @@ const Card = ({ data }) => {
       )}
 
       <div className="h-64">
-        <Link to={`/detail/${id}`}>
+        <Link to={`/detail/${media_type}/${id}`}>
           <img
             src={`https://image.tmdb.org/t/p/original${poster_path}`}
             alt=""
@@ -82,8 +79,8 @@ const Card = ({ data }) => {
           </h2>
           <InformationCircleIcon
             title="Detail"
-            className="h-6 w-6 cursor-pointer"
-            onClick={() => navigate(`/detail/${id}`)}
+            className="h-6 w-6 cursor-pointer shrink-0"
+            onClick={() => navigate(`/detail/${media_type}/${id}`)}
           />
         </div>
 
