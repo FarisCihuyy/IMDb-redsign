@@ -1,38 +1,37 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 const WatchlistContext = createContext();
 
 export const WatchlistProvider = ({ children }) => {
   const [watchlist, setWatchlist] = useState([]);
 
-  // ===== Load dari localStorage saat pertama kali =====
   useEffect(() => {
-    const stored = localStorage.getItem('watchlist');
-    if (stored) {
-      setWatchlist(JSON.parse(stored));
-    }
+    const saved = JSON.parse(localStorage.getItem('watchlist')) || [];
+    setWatchlist(saved);
   }, []);
 
-  // ===== Simpan ke localStorage setiap ada perubahan =====
-  useEffect(() => {
-    localStorage.setItem('watchlist', JSON.stringify(watchlist));
-  }, [watchlist]);
-
-  // Tambah ke watchlist
   const addToWatchlist = (movie) => {
-    if (!watchlist.some((m) => m.id === movie.id)) {
-      setWatchlist([...watchlist, movie]);
-    }
+    setWatchlist((prev) => {
+      const exists = prev.some((m) => m.id === movie.id);
+      if (exists) return prev;
+
+      const updated = [...prev, movie];
+      localStorage.setItem('watchlist', JSON.stringify(updated));
+      return updated;
+    });
   };
 
-  // Hapus dari watchlist
   const removeFromWatchlist = (id) => {
-    setWatchlist(watchlist.filter((m) => m.id !== id));
+    const updated = watchlist.filter((m) => m.id !== id);
+    setWatchlist(updated);
+    localStorage.setItem('watchlist', JSON.stringify(updated));
   };
+
+  const isBookmarked = (id) => watchlist.some((m) => m.id === id);
 
   return (
     <WatchlistContext.Provider
-      value={{ watchlist, addToWatchlist, removeFromWatchlist }}
+      value={{ watchlist, addToWatchlist, removeFromWatchlist, isBookmarked }}
     >
       {children}
     </WatchlistContext.Provider>
