@@ -42,7 +42,7 @@ const Navbar = () => {
   const handleLogout = () => {
     logout();
     setOpenProfile(false);
-    navigate('/login');
+    navigate('/');
   };
 
   const handleChange = (e) => {
