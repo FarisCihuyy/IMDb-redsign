@@ -24,9 +24,7 @@ const RatingStars = ({ score }) => {
 };
 
 export default function MovieDetail() {
-  const { id } = useParams();
-  const [searchParams] = useSearchParams();
-  const type = searchParams.get('type') || 'movie';
+  const { media_type: type, id } = useParams();
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -78,7 +76,6 @@ export default function MovieDetail() {
   const displayDate = release_date || first_air_date;
   const displayRuntime =
     runtime || (episode_run_time && episode_run_time[0]) || 'N/A';
-  const genreList = genres?.map((g) => g.name).join(', ');
 
   const { watchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
   const isBookmarked = watchlist.some((movie) => movie.id === data.id);

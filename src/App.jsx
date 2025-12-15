@@ -16,7 +16,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/detail/:id" element={<Detail />} />
+        <Route path="/detail/:media_type/:id" element={<Detail />} />
       </Routes>
     </WatchlistProvider>
   );
