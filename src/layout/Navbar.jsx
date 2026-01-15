@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import {
   BookmarkIcon,
   ChevronDownIcon,
@@ -50,25 +50,25 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    if (query === '') return;
+    if (query === "") return;
 
     const getData = async () => {
       try {
         const res = await fetch(
           `https://api.themoviedb.org/3/search/multi?query=${query}`,
           {
-            method: 'GET',
+            method: "GET",
             headers: {
-              accept: 'application/json',
+              accept: "application/json",
               Authorization: `Bearer ${apiKey}`,
             },
           }
         );
         const data = await res.json();
         setData(data.results);
-        console.log('HASIL SEARCH:', data.results);
+        console.log("HASIL SEARCH:", data.results);
       } catch (err) {
-        console.log('Search Error:', err);
+        console.log("Search Error:", err);
       }
     };
     getData();

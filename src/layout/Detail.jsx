@@ -14,7 +14,7 @@ const RatingStars = ({ score }) => {
       <span
         key={index}
         className={`text-xl ${
-          index < fullStars ? 'text-yellow-500' : 'text-gray-400'
+          index < fullStars ? "text-yellow-500" : "text-gray-400"
         }`}
       >
         ★
@@ -38,7 +38,7 @@ export default function MovieDetail() {
         const result = await fetchData(`/${type}/${id}`);
         setData(result);
       } catch (err) {
-        console.error('Error fetching detail:', err);
+        console.error("Error fetching detail:", err);
         setError(true);
       } finally {
         setLoading(false);
@@ -196,11 +196,11 @@ export default function MovieDetail() {
             </div>
             <div className="flex justify-between">
               <span className="font-semibold text-gray-400">Budget:</span>
-              <span>{budget || 'N/A'}</span>
+              <span>{budget || "N/A"}</span>
             </div>
             <div className="flex justify-between">
               <span className="font-semibold text-gray-400">Revenue:</span>
-              <span>{revenue || 'N/A'}</span>
+              <span>{revenue || "N/A"}</span>
             </div>
             <div className="flex justify-between">
               <span className="font-semibold text-gray-400">Language:</span>
