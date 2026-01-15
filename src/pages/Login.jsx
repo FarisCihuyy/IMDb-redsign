@@ -1,15 +1,31 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log("Login:", email, password);
+    setError(null);
+    setLoading(true);
+
+    try {
+      await login(username, password);
+      navigate('/');
+    } catch (err) {
+      setError('Username atau password salah');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -21,26 +37,25 @@ export default function Login() {
       }}
     >
       <div className="w-full max-w-sm bg-white/20 backdrop-blur-xl p-6 rounded-2xl shadow-2xl border border-white/30">
-        
-        {/* TITLE LOGIN */}
-        <h2 className="text-2xl font-bold text-center text-white mb-6">Login</h2>
+        <h2 className="text-2xl font-bold text-center text-white mb-6">
+          Login
+        </h2>
 
         <form onSubmit={handleLogin} className="space-y-4">
-
-          {/* EMAIL */}
           <div>
-            <label className="block mb-1 text-sm font-medium text-white">Email</label>
+            <label className="block mb-1 text-sm font-medium text-white">
+              Username
+            </label>
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               className="w-full border border-white bg-white/10 text-white placeholder-white/80 p-2 rounded-lg focus:ring-2 focus:ring-blue-300"
-              placeholder="Masukkan email"
+              placeholder="Masukkan username"
               required
             />
           </div>
 
-          {/* PASSWORD */}
           <div>
             <label className="block mb-1 text-sm font-medium text-white">
               Password
@@ -48,7 +63,7 @@ export default function Login() {
 
             <div className="relative">
               <input
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full border border-white bg-white/10 text-white placeholder-white/80 p-2 rounded-lg focus:ring-2 focus:ring-blue-300 pr-10"
@@ -56,7 +71,6 @@ export default function Login() {
                 required
               />
 
-              {/* ICON MATA */}
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
@@ -71,33 +85,32 @@ export default function Login() {
             </div>
           </div>
 
-          {/* TOMBOL LOGIN */}
+          {error && <p className="text-sm text-red-300 text-center">{error}</p>}
+
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition"
+            disabled={loading}
+            className="w-full bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
           >
-            Login
+            {loading ? 'Loading...' : 'Login'}
           </button>
         </form>
 
-        {/* LINK REGISTER */}
         <p className="text-center text-sm mt-4 text-white">
-          Belum punya akun?{" "}
+          Belum punya akun?{' '}
           <Link to="/register" className="text-blue-200 hover:underline">
             Daftar dulu
           </Link>
         </p>
 
-        {/* LINK KEMBALI KE HOME */}
         <p className="text-center text-sm mt-2">
           <Link
-            to="/WatchPage"
+            to="/"
             className="text-white underline hover:text-blue-200 transition"
           >
             ← Kembali ke Home
           </Link>
         </p>
-
       </div>
     </div>
   );

@@ -14,24 +14,36 @@ const ScrollButton = ({ children, speed = 500 }) => {
     scrollRef.current.scrollBy({ left: -speed, behavior: 'smooth' });
   };
 
+  const checkButtons = () => {
+    const slider = scrollRef.current;
+    if (!slider) return;
+
+    // hide left
+    setHideLeft(slider.scrollLeft <= 0);
+
+    // hide right
+    const maxScroll = slider.scrollWidth - slider.clientWidth;
+    setHideRight(slider.scrollLeft >= maxScroll - 5); // tolerance kecil
+  };
+
   useEffect(() => {
     const slider = scrollRef.current;
     if (!slider) return;
 
-    const checkButtons = () => {
-      // hide left
-      setHideLeft(slider.scrollLeft <= 0);
-
-      // hide right
-      const maxScroll = slider.scrollWidth - slider.clientWidth;
-      setHideRight(slider.scrollLeft >= maxScroll - 5); // tolerance biar gak bug
-    };
-
-    slider.addEventListener('scroll', checkButtons);
+    // cek langsung saat mount
     checkButtons();
 
-    return () => slider.removeEventListener('scroll', checkButtons);
-  }, []);
+    // cek saat scroll
+    slider.addEventListener('scroll', checkButtons);
+
+    // cek saat window resize (konten bisa berubah)
+    window.addEventListener('resize', checkButtons);
+
+    return () => {
+      slider.removeEventListener('scroll', checkButtons);
+      window.removeEventListener('resize', checkButtons);
+    };
+  }, [children]); // jika children berubah, cek ulang
 
   return (
     <div className="relative">

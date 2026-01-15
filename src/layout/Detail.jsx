@@ -1,7 +1,9 @@
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { fetchData } from "../services/fetchData";
-import Rekomendasi from "./Rekomendasi";
+import { useParams, useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { fetchData } from '../services/fetchData';
+import { BookmarkIcon } from '@heroicons/react/16/solid';
+import Rekomendasi from './Rekomendasi';
+import { useWatchlist } from '../context/WatchlistContext';
 
 // Rating Stars
 const RatingStars = ({ score }) => {
@@ -73,7 +75,25 @@ export default function MovieDetail() {
   const displayTitle = title || name;
   const displayDate = release_date || first_air_date;
   const displayRuntime =
-    runtime || (episode_run_time && episode_run_time[0]) || "N/A";
+    runtime || (episode_run_time && episode_run_time[0]) || 'N/A';
+
+  const { watchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
+  const isBookmarked = watchlist.some((movie) => movie.id === data.id);
+
+  const handleBookmark = () => {
+    if (bookmarked) {
+      removeFromWatchlist(id);
+    } else {
+      addToWatchlist({
+        id,
+        title: displayTitle,
+        poster_path: poster_path, // ← WAJIB
+        vote_average,
+        release_date,
+        first_air_date,
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white font-sans">
@@ -129,6 +149,28 @@ export default function MovieDetail() {
                 </span>
               ))}
             </div>
+            <button
+              onClick={() =>
+                isBookmarked
+                  ? removeFromWatchlist(data.id)
+                  : addToWatchlist({
+                      id: data.id,
+                      title: displayTitle,
+                      poster_path,
+                      vote_average,
+                      release_date,
+                      first_air_date,
+                    })
+              }
+              className={`px-4 py-2 rounded-lg font-medium transition
+    ${
+      isBookmarked
+        ? 'bg-yellow-400 text-black hover:bg-yellow-300'
+        : 'bg-gray-700 text-white hover:bg-gray-600'
+    }`}
+            >
+              {isBookmarked ? 'Saved to Watchlist' : 'Add to Watchlist'}
+            </button>
           </div>
         </div>
       </div>

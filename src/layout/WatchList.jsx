@@ -6,7 +6,7 @@ const WatchList = () => {
   const { watchlist } = useWatchlist();
 
   return (
-    <section className="my-28 px-12">
+    <section id="watchlist" className="scroll-mt-28 px-12">
       {/* WATCHLIST SECTION */}
       <div className="mt-24 space-y-10">
         <p className="relative px-4 py-1 font-medium before:absolute before:top-0 before:left-0 before:bottom-0 before:w-1 before:bg-accent before:rounded-full">

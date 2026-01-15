@@ -65,7 +65,8 @@ const Card = ({ data }) => {
       <div className="h-64">
         <Link to={`/detail/${media_type}/${id}`}>
           <img
-            src={`https://image.tmdb.org/t/p/original${poster_path}`}
+            loading="lazy"
+            src={`https://image.tmdb.org/t/p/w500${poster_path}`}
             alt=""
             className="w-full h-full object-cover"
           />

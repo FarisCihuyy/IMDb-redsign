@@ -4,15 +4,46 @@ import {
   ChevronDownIcon,
   MagnifyingGlassIcon,
   UserCircleIcon,
-} from "@heroicons/react/16/solid";
-import { Link } from "react-router-dom";
+} from '@heroicons/react/16/solid';
+import {
+  ArrowRightEndOnRectangleIcon,
+  ArrowRightStartOnRectangleIcon,
+} from '@heroicons/react/24/outline';
+import { getAvatarColor } from '../utils/avatar';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   const [data, setData] = useState([]);
   const [isFocused, setIsFocused] = useState(false);
 
   const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleWatchlistClick = () => {
+    if (location.pathname === '/') {
+      // ✅ sudah di home → scroll langsung
+      const el = document.getElementById('watchlist');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      // ✅ bukan di home → pindah dulu
+      navigate('/', { state: { scrollTo: 'watchlist' } });
+    }
+  };
+
+  const [openProfile, setOpenProfile] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    setOpenProfile(false);
+    navigate('/');
+  };
 
   const handleChange = (e) => {
     setQuery(e.target.value);
@@ -106,13 +137,59 @@ const Navbar = () => {
             )}
           </div>
 
-          <div className="flex gap-1">
+          <button
+            onClick={handleWatchlistClick}
+            className="flex gap-1 items-center hover:text-accent transition"
+          >
             <BookmarkIcon className="h-6 w-6" />
             <span>Watchlist</span>
-          </div>
-          <div className="flex gap-1 items-center">
-            <UserCircleIcon className="h-6 w-6" />
-            <ChevronDownIcon className="h-4 w-4" />
+          </button>
+
+          <div className="relative">
+            {!user ? (
+              // ================= BELUM LOGIN =================
+              <Link
+                to="/login"
+                className="flex gap-1 items-center hover:opacity-80 transition"
+              >
+                <UserCircleIcon className="h-6 w-6" />
+                <span className="text-sm">Login</span>
+              </Link>
+            ) : (
+              // ================= SUDAH LOGIN =================
+              <>
+                <button
+                  onClick={() => setOpenProfile(!openProfile)}
+                  className="flex gap-2 items-center hover:opacity-80 transition"
+                >
+                  {/* AVATAR HURUF */}
+                  <div
+                    style={{ backgroundColor: getAvatarColor(user.username) }}
+                    className="w-8 h-8 rounded-full ${getAvatarColor(user.username)} text-white font-bold flex items-center justify-center uppercase"
+                  >
+                    {user.username.charAt(0)}
+                  </div>
+
+                  {/* USERNAME */}
+                  <span className="text-sm">{user.username}</span>
+
+                  <ChevronDownIcon className="h-4 w-4" />
+                </button>
+
+                {/* DROPDOWN */}
+                {openProfile && (
+                  <div className="absolute right-0 mt-2 w-30 bg-black/90 backdrop-blur rounded-xl shadow-lg overflow-hidden text-sm">
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-2 px-4 py-2 hover:bg-white/10 text-white hover:text-red-500 transition"
+                    >
+                      <ArrowRightStartOnRectangleIcon className="h-5 w-5" />
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
       </nav>
